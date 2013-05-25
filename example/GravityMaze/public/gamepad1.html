@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Gamepad Template</title>
+    <script src="./javascripts/gamepad.js"></script>
+    <script>
+       var url = "ws://" + document.URL.substr(7).split('/')[0];
+        var gamepad = new Gamepad(url,'gamepad1');
+        gamepad.connect();
+        gamepad.start_deviceorientation();
+    </script>
+</head>
+
+<body>
+  move your mobile to control ball to travel the maze
+</body>
+</html>

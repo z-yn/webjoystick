@@ -1,0 +1,508 @@
+<!DOCTYPE HTML>
+<html style="min-height:480px;">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+    <meta name="format-detection" content="telephone=no,address=no"/>
+    <title>Mark Demo</title>
+
+    <link href="style-min.css" tppabs="http://html5mark.com/style/style-min.css" rel="stylesheet"/>
+    <link href="demo-min.css" tppabs="http://html5mark.com/style/demo-min.css" rel="stylesheet"/>
+    <style>
+        .gra_box{background:#e6e6e6;bottom:0;left:0;position:absolute;right:0;top:0;overflow:hidden;}
+        .gra_bg{background:url(gravity_bg.png)/*tpa=http://html5mark.com/demo/images/gravity_bg.png*/ center top no-repeat;background-size:296px;height:330px;margin:1px auto;position:relative;width:296px;}
+
+        .ball,
+        .ball_bg{background:url(sp_h.png)/*tpa=http://html5mark.com/demo/images/sp_h.png*/ no-repeat;background-size:32px;position:absolute;}
+
+        .ball{background-position:-3px 0;height:26px;width:26px;}
+        .ball_bg{background-position:0 -27px;height:32px;width:32px;}
+
+        .gra_end{background:url(sp_h.jpg)/*tpa=http://html5mark.com/demo/images/sp_h.jpg*/ no-repeat;background-size:58px;height:44px;position:absolute;width:58px;}
+    </style>
+    <script src="../javascripts/gamewatcher.js"></script>
+</head>
+
+<body class="left-in">
+<header class="header">
+    <a href="javascript:if(confirm(%27http://html5mark.com/index.html  \n\nThis file was not retrieved by Teleport Pro, because it is addressed on a domain or path outside the boundaries set for its Starting Address.  \n\nDo you want to open it from the server?%27))window.location=%27http://html5mark.com/index.html#~loop:svt=demoList%27" tppabs="http://html5mark.com/index.html#~loop:svt=demoList" class="bg_x btn_back" title="返回">返回</a>
+    <h1 class="title" title="Demo示范">Demo示范</h1>
+</header>
+<div class="main main_3">
+    <div class="main_3_box">
+        <h2 class="title">7.重力感应球</h2>
+        <div id="scroller" class="gra_box">
+            <div class="gra_bg">
+                <div class="ball_bg" style="left:0;top:92px;"></div>
+                <div class="ball_bg" style="left:28px;top:164px;"></div>
+                <div class="ball_bg" style="bottom:0;left:0;"></div>
+
+                <div class="ball_bg" style="bottom:0;left:106px;"></div>
+                <div class="ball_bg" style="left:80px;top:220px;"></div>
+                <div class="ball_bg" style="left:106px;top:62px;"></div>
+
+                <div class="ball_bg" style="left:181px;top:2px;"></div>
+                <div class="ball_bg" style="left:181px;top:88px;"></div>
+                <div class="ball_bg" style="left:158px;top:174px;"></div>
+                <div class="ball_bg" style="bottom:0;left:158px;"></div>
+
+                <!--<div class="ball_bg" style="bottom:0;right:0;"></div>
+                <div class="ball_bg" style="right:46px;top:267px"></div>
+                <div class="ball_bg" style="right:0;top:108px"></div>-->
+
+                <div class="gra_end" style="right:0;top:3px;"></div>
+
+                <div class="ball" style="left:14px;top:35px;"></div>
+            </div>
+        </div>
+        <div id="album_pop">
+            <div class="pop_bg"></div>
+            <div class="pop bg">
+                <p>不支持重力感应球功能<br />demo无法正常使用</p>
+                <a id="album_pop_btn" class="pop_btn" href="javascript:void(0);">返  回</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+<div class="zoom_box">
+    <a id="prev-btn" href="compass.html" tppabs="http://html5mark.com/demo/compass.html" class="zoom_prev" title="上一个"><span class="bg_x zoom_icon1"></span><span class="zoom_txt">上一个</span></a>
+    <a id="next-btn" href="canvas.html" tppabs="http://html5mark.com/demo/canvas.html" class="zoom_next" title="下一个"><span class="zoom_txt">下一个 </span><span class="bg_x zoom_icon2"></span></a>
+</div>
+!-->
+<div id="loading">
+    <div class="loading">
+        <div class="loading_img"></div>
+    </div>
+</div>
+
+<script>
+    $ = function ($id) {
+        return document.getElementById($id);
+    };
+    var isSupported = false;
+    
+    var url = "ws://" + document.URL.substr(7).split('/')[0];
+    var gamewatcher = new GameWatcher(url);
+	 
+    gamewatcher.connect();
+    
+    /**
+     * 游戏类
+     */
+    var Game = Game || {
+        ball: undefined,
+        loses: [],
+        loses2: [],
+        hits: [],
+        waters: [],
+        passRect: undefined,
+
+        x: 0,
+        y: 0,
+        vx: 0,
+        vy: 0,
+
+        cnt: 0,
+        o: null,
+        level: 1,
+        frameId: 0,
+        flag: null, // 踩到冰块的标示符
+        status: 'stop', // stop running pass lose
+
+        startTime: 0,
+        fps: $('fps'),
+
+        setGameData: function ($parentNode) {
+            $parentNode = $parentNode || document;
+            var loseEls = $parentNode.querySelectorAll('.ball_bg'), loses = [],
+                    lose2Els = $parentNode.querySelectorAll('.ball_bg_active'), loses2 = [],
+                    waterEls = $parentNode.querySelectorAll('.ice'), waters = [],
+                    passEl = $parentNode.querySelector('.gra_end'), len, isIceRotate, el;
+
+            len = loseEls.length;
+            while(len--) {
+                //console.log(loseEls[len].childElementCount, len, loseEls[len]);
+                el = loseEls[len];
+                el.childElementCount == 0 ? loses.push({x:el.offsetLeft, y:el.offsetTop})
+                        : loses2.push({x:el.offsetLeft, y:el.offsetTop,
+                    t:Math.random() * 300 >> 0, el:el.getElementsByTagName('p')[0], isOpen:false});
+            }
+
+            len = waterEls.length;
+            while(len--) {
+                el = waterEls[len];
+                isIceRotate = String(el.style.webkitTransform).indexOf('90') > 0;
+                waters.push({x:isIceRotate ? el.offsetLeft + 15 : el.offsetLeft + 5,
+                    y:isIceRotate ? el.offsetTop - 5 : el.offsetTop + 5,
+                    w:isIceRotate ? el.clientHeight - 10 : el.clientWidth - 10,
+                    h:isIceRotate ? el.clientWidth - 10 : el.clientHeight - 10,
+                    isNormal: !isIceRotate});
+            }
+
+            Game.loses = loses;
+            Game.loses2 = loses2;
+            Game.waters = waters;
+            Game.passRect = {
+                x:passEl.offsetLeft + 25,
+                y:passEl.offsetTop,
+                w:passEl.clientWidth - 45,
+                h:passEl.clientHeight
+            };
+            Game.hits = [
+                {x:73,y:0,w:7,h:271},    //  90/1.5 + 26/2, ,30/1.5 - 26/2
+                {x:151,y:61,w:7,h:276},  // 207/1.5 + 26/2, 72/1.5 + 26/2 ,30/1.5 - 26/2
+                {x:227,y:0,w:7,h:268}
+            ];
+            Game.ball = $parentNode.querySelector('.ball');
+        },
+
+        destroy: function () {
+            this.ball && (this.ball.className = 'ball none');
+            cancelFrame(this.frameId);
+            window.removeEventListener('deviceorientation', this.orientationEvt);
+        },
+
+        start: function () {
+//        alert('start()::' + this.level);
+//        var animaDiv = $('anima');
+            cancelFrame(this.frameId);
+            Game.setGameData();
+            Game.startGame(null);
+
+//        animaDiv.innerHTML = '<div class="door_01 open"></div><div class="door_02 open"></div>';
+//        animaDiv.querySelector('.door_01').addEventListener('webkitAnimationEnd', this.startGame, false);
+        },
+
+        startGame: function ($e) {
+//        alert('startGame()::' + Game.level);
+//        var animaDiv = $('anima');
+//        animaDiv.querySelector('.door_01').removeEventListener('webkitAnimationEnd', Game.startGame);
+//        animaDiv.innerHTML = '';
+
+            Game.x = 5;
+            Game.y = 5;
+            Game.vx = 0;
+            Game.vy = 0;
+
+            Game.ball.className = 'ball';
+            Game.ball.style.left = Game.x + 'px';
+            Game.ball.style.top = Game.y + 'px';
+            /*
+            if (window.DeviceOrientationEvent) {
+                isSupported = true;
+                window.addEventListener('deviceorientation', Game.orientationEvt, false);
+                Game.startTime = window.mozAnimationStartTime || Date.now();
+                Game.status = 'running';
+                Game.frameId = onFrame(Game.running);
+            } else {
+                //alert("很抱歉，您的浏览器或者设备不支持传感器！");
+                isSupported = false;
+                document.documentElement.style.cssText = "";
+                document.getElementById("loading").className = 'none';
+                document.getElementById('scroller').innerHTML = '';
+                document.getElementById('album_pop').style.display = 'block';
+                document.getElementById('album_pop_btn').onclick = function () {
+                    document.getElementById('album_pop').style.display = 'none';
+                }
+            }*/
+                isSupported = true;
+                gamewatcher.on('deviceorientation',Game.orientationEvt);
+                Game.startTime = window.mozAnimationStartTime || Date.now();
+                Game.status = 'running';
+                Game.frameId = onFrame(Game.running);
+           
+        },
+
+        running: function ($timestamp) {
+            Game.x += Game.vx;
+            Game.y += Game.vy;
+
+            if (Game.x < 0) {
+                Game.x = 0;
+            } else if (Game.x > 296 - 24) {
+                Game.x = 296 - 24;
+            }
+            if (Game.y < 0) {
+                Game.y = 0;
+            } else if (Game.y > 330 - 24) {
+                Game.y = 330 - 24;
+            }
+            Game.checkHit();
+            Game.checkLose(Game.loses);
+            Game.checkLose2();
+            Game.checkWater();
+            Game.checkPass();
+
+            Game.ball.style.left = Game.x + 'px';
+            Game.ball.style.top = Game.y + 'px';
+
+//        var drawStart = ($timestamp || Date.now());
+//        Game.fps.innerHTML = 1000 / (drawStart - Game.startTime) >> 0;
+//        Game.startTime = drawStart;
+            Game.status == 'running' && (Game.frameId = onFrame(Game.running));
+        },
+
+        nextLevel: function () {
+            this.level++;
+//        this.fps.innerHTML = this.status;
+            cancelFrame(this.frameId);
+            if (this.level <= 5) {
+                Page.Manager.goPage(this.level)
+            }else {
+//            this.fps.innerHTML = 'game over';
+                document.querySelector('.over').style.display = '';
+
+                this.frameId = setTimeout(function () {
+                    clearInterval(Game.frameId);
+                    $('anima').innerHTML = '';
+                    Page.Manager.goPage(0);
+                }, 2000);
+            }
+        },
+
+        checkPass: function () {
+            if (this.isC2RCollision(this.passRect.x, this.passRect.y, this.passRect.w, this.passRect.h, this.x+19, this.y+19, 19)) {
+//            window.removeEventListener('deviceorientation', this.orientationEvt);
+                this.status = 'pass';
+                this.o = this.passRect;
+                cancelFrame(this.frameId);
+
+                // set localStorage:
+                if (window.localStorage) {
+                    localStorage.setItem('gameLevel', this.level);
+                }
+
+                this.frameId = onFrame(this.inBall);
+            }
+        },
+
+        checkLose: function ($loses) {
+            var len, o, dis, dx, dy;
+            if ($loses) {
+                len = $loses.length;
+                while(len--) {
+                    o = $loses[len];
+                    dx = this.x - o.x;
+                    dy = this.y - o.y;
+                    dis = Math.sqrt(dx * dx + dy * dy);
+
+                    // 44 = 38/2 + 50/2
+                    if (dis < 25) {
+//                    window.removeEventListener('deviceorientation', this.orientationEvt);
+                        this.status = 'lose';
+                        this.o = o;
+                        cancelFrame(this.frameId);
+                        this.frameId = onFrame(this.inBall);
+                        break;
+                    }
+                }
+            }
+        },
+
+        checkLose2: function () {
+            var len, loses2 = this.loses2, o, loses = [];
+            if (loses2) {
+                len = loses2.length;
+                while(len--) {
+                    o = loses2[len];
+                    if (--o.t <= 0) {
+                        o.t = Math.random() * 200 + 100 >> 0;
+                        o.isOpen = !o.isOpen;
+                        o.isOpen ? o.el.className = 'ball_bg_active ball_bg_hide' : o.el.className = 'ball_bg_active ball_bg_show';
+                    }
+                    o.isOpen && loses.push(o);
+                }
+                this.checkLose(loses);
+            }
+        },
+
+        checkHit: function () {
+            var len, hits = this.hits, o, wHalf, hHalf, dx, dy, disx, disy;
+            if (hits) {
+                len = hits.length;
+                while(len--) {
+                    o = hits[len];
+
+                    //计算圆心相对于矩形的坐标
+                    wHalf = o.w >> 1;
+                    hHalf = o.h >> 1;
+                    dx = o.x + wHalf - this.x - 19;
+                    dy = o.y + hHalf - this.y - 19;
+
+                    disx = Math.max(Math.min(dx, wHalf), -wHalf);
+                    disy = Math.max(Math.min(dy, hHalf), -hHalf);
+
+                    if ((disx - dx) * (disx - dx) + (disy - dy) * (disy - dy) <= 361) {
+                        if (disy == hHalf) { // rect top
+                            if (disx == wHalf) { // left top
+                                this.y > o.y - 38 && (this.x -= 2);
+                            } else if (disx == -wHalf) { // right top
+                                this.y > o.y - 38 && (this.x += 2);
+                            } else { // top
+                                this.y = o.y - 38;
+                            }
+                        } else if (disy == -hHalf) { // rect bottom
+                            if (disx == wHalf) { // left bottom
+                                this.y < o.y + o.h && (this.x -= 2);
+                            } else if (disx == -wHalf) { // right bottom
+                                this.y < o.y + o.h && (this.x += 2);
+                            } else { // bottom
+                                this.y = o.y + o.h;
+                            }
+                        } else if (disx == wHalf) { // rect left
+                            this.x = o.x - 38;
+                        } else if (disx == -wHalf) { // rect right
+                            this.x = o.x + o.w;
+                        }
+                    }
+                }
+            }
+        },
+
+        checkWater: function () {
+            var len, waters = this.waters, o, wHalf, hHalf, dx, dy, disx, disy;
+            if (waters) {
+                len = waters.length;
+                while(len--) {
+                    o = waters[len];
+
+                    //计算圆心相对于矩形的坐标
+                    wHalf = o.w >> 1;
+                    hHalf = o.h >> 1;
+                    dx = o.x + wHalf - this.x - 19;
+                    dy = o.y + hHalf - this.y - 19;
+
+                    disx = Math.max(Math.min(dx, wHalf), -wHalf);
+                    disy = Math.max(Math.min(dy, hHalf), -hHalf);
+
+                    if ((disx - dx) * (disx - dx) + (disy - dy) * (disy - dy) > 361) {
+                        len <= 0 && (this.flag = null);
+                    }else {
+                        if (this.flag) {
+                            ++this.cnt > 20 && (this.flag = 'del');
+                            switch(this.flag) {
+                                case 'top':
+                                    this.y += 5;
+                                    o.isNormal && this.y > o.y && (this.y = o.y + 3);
+                                    break;
+                                case 'bottom':
+                                    this.y -= 5;
+                                    o.isNormal && this.y < o.y && (this.y = o.y - 7);
+                                    break;
+                                case 'left':
+                                    this.x += 5;
+                                    break;
+                                case 'right':
+                                    this.x -= 5;
+                                    break;
+                            }
+                        }else {
+                            this.cnt = 0;
+                            if (disy == hHalf) { // rect top
+                                this.flag = 'top';
+                            } else if (disy == -hHalf) { // rect bottom
+                                this.flag = 'bottom';
+                            } else if (disx == wHalf) { // rect left
+                                this.flag = 'left';
+                            } else if (disx == -wHalf) { // rect right
+                                this.flag = 'right';
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+        },
+
+        isC2RCollision: function(x1, y1, w1, h1, x2, y2, r2) {
+            return !((Math.abs(x2 - (x1 + w1 / 2)) > w1 / 2 + r2) || (Math.abs(y2 - (y1 + h1 / 2)) > h1 / 2 + r2));
+        },
+
+        inBall: function () {
+            var dx = (Game.o.x - Game.x) * 0.5;
+            var dy = (Game.o.y- Game.y) * 0.5;
+            Game.x += dx;
+            Game.y += dy;
+            Game.ball.style.left = Game.x + 'px';
+            Game.ball.style.top = Game.y + 'px';
+
+            if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+                (Game.status == 'lose' || Game.status == 'pass') && (Game.frameId = onFrame(Game.inBall));
+            } else {
+                cancelFrame(Game.frameId);
+                Game.ball.className = 'ball none';
+                setTimeout(function () {Game.start();}, 200);
+
+//                var animaDiv = $('anima');
+//                cancelFrame(Game.frameId);
+//                Game.ball.className = 'ball none';
+//
+//                animaDiv.innerHTML = '<div class="door_01 close"></div><div class="door_02 close"></div>\
+//                <div style="display:none" class="over txt">You Win!</div>';
+//
+//                animaDiv.querySelector('.door_01').addEventListener('webkitAnimationEnd', function ($e) {
+//                    $e.target.removeEventListener('webkitAnimationEnd', arguments.callee);
+//
+//                    if (Game.status == 'lose') {
+//                        setTimeout(function () {Game.start();}, 250);
+//                    } else if (Game.status == 'pass') {
+//                        setTimeout(function () {Game.nextLevel();}, 250);
+//                    }
+//                }, false);
+            }
+        },
+
+        orientationEvt: function (data) {
+	   // if (data.uid==='gamepad1') 
+	    var $e = data.gamedata;
+            var tiltLR = $e.gamma;
+            tiltLR = Math.abs(tiltLR) < 90 ? tiltLR : (tiltLR > 0 && tiltLR < 180 ? 90 : -90);
+            Game.vx = tiltLR * 0.15;
+            Game.vy = $e.beta * 0.15;
+            //Game.fps.innerHTML = (Game.x >> 0) + 'x=y' + (Game.y >> 0) + '<br/>' + Game.vx + '<br/>' + Game.vy;
+        }
+    };
+
+    onFrame = (function() {
+        return window.requestAnimationFrame
+                || window.webkitRequestAnimationFrame
+                || window.mozRequestAnimationFrame
+                || window.oRequestAnimationFrame
+                || window.msRequestAnimationFrame
+                || function(callback) { return setTimeout(callback, 1); }
+    })();
+    cancelFrame = (function () {
+        return window.cancelRequestAnimationFrame
+                || window.webkitCancelAnimationFrame
+                || window.webkitCancelRequestAnimationFrame
+                || window.mozCancelRequestAnimationFrame
+                || window.oCancelRequestAnimationFrame
+                || window.msCancelRequestAnimationFrame
+                || clearTimeout;
+    })();
+
+    function setHTMLCss() {
+        if (isSupported === false) return;
+        if (document.documentElement.clientHeight < 458) {
+            document.documentElement.style.cssText = "min-height:480px; position: relative;";
+        } else {
+            document.documentElement.style.cssText = "min-height:480px;";
+        }
+    }
+
+    window.addEventListener('load', function () {
+        document.getElementById("loading").className = 'none';
+        Game.start();
+        setHTMLCss();
+    }, false);
+
+    window.addEventListener('resize', function () {
+        setHTMLCss();
+    }, false);
+</script>
+</body>
+</html>
