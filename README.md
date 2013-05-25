@@ -11,7 +11,7 @@ with the help of Node Packaged Modules tool npm, you can easily install it by
 ```bash
     # npm install webjoystick -g
 ```
-    or download the source by
+or download the source by
     
 ```bash
     $ git clone https://github.com/z-yn/webjoystick.git
@@ -40,11 +40,11 @@ or just deploy a simple example by
   var webjoystick = require('webjoystick');
   var server = webjoystick.createServer(config);
 ```
-  config is used to create a websocket server,so you can see
-  <https://github.com/Worlize/WebSocket-Node/wiki/Documentation>
+config is used to create a websocket server,so you can see
+<https://github.com/Worlize/WebSocket-Node/wiki/Documentation>
   
 ### GameWatcher
- you need add public/javascripts/gamewatcher.js of the template
+you need add public/javascripts/gamewatcher.js of the template
 #### Methods
 
 ##### GameWatcher(url)
@@ -84,7 +84,7 @@ send vabrate message to the gamepad
 * devicemotion-----DeviceMotion Event of html5 Device API
 
 ### Gamepad
-    you need add public/javascripts/gamepad.js of the template
+you need add public/javascripts/gamepad.js of the template
     
 #### Methods
 
@@ -118,7 +118,7 @@ send message to GameWatcher,it can deal with by on(msg,data) in GameWatcher
 * `data`: data of the message ,can be json object
 
 *Example*
- send 'hello' as title and 'world' as data to GameWatcher
+send 'hello' as title and 'world' as data to GameWatcher
 ```javascript
 var url = "ws://" + document.URL.substr(7).split('/')[0];
 var gamepad = new Gamepad(url,'gamepad1')
