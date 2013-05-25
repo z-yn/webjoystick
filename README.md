@@ -21,17 +21,20 @@ and run
 ```bash
     # npm install ./webjoystick/ -g
 ```
+
 ## Quick start
 if you install webjoystick as global with option -g
 you can create a simple template project by 
+
 ```bash
     $ webjoystick <foldername>
 ```
 or just deploy a simple example by
+
 ```bash
     $ webjoystick -e <foldername>
 ```
-# Usage
+## Usage
 ### webjoystick
 ```javascript
   var webjoystick = require('webjoystick');
@@ -45,10 +48,13 @@ or just deploy a simple example by
 #### Methods
 
 ##### GameWatcher(url)
+
 *Arguments*
+
 * `url`: the url of the websocket
 
 *Example*
+
 ```javascript
 var url = "ws://" + document.URL.substr(7).split('/')[0];
 var gamewatcher = new GameWatcher(url)
@@ -63,7 +69,8 @@ handle the event named `msg` with the function `func`
     data.uid---the uid of gamepad ;data.gamedata--- the data about the event
 ##### vabrate(uid,ruler)
 send vabrate message to the gamepad
-Arguments*
+
+*Arguments*
 * `uid`: the uid of gamepad
 * `ruler`: the ruler of vibration
 
@@ -78,31 +85,38 @@ Arguments*
 
 ### Gamepad
     you need add public/javascripts/gamepad.js of the template
-####Methods
+    
+#### Methods
 
 ##### Gamepad(url,uid)
+
 *Arguments*
 * `url`: the url of the websocket
 * `uid`: the unique id of a gamepad
 
 *Example*
+
 ```javascript
 var url = "ws://" + document.URL.substr(7).split('/')[0];
 var gamepad = new Gamepad(url,'gamepad1')
 ```
 ##### connect()
 connect to the websocket server
+
 ##### on(msg,func)
 handle the event named `msg` with the function `func`
 *Arguments*
 * `msg`: then event name
 * `func(data)`: the function to handle this event.
     data.uid---the uid of gamepad ;data.gamedata--- the data about the event
+    
 ##### sendMessage（msg,data)
 send message to GameWatcher,it can deal with by on(msg,data) in GameWatcher
+
 *Arguments*
 * `msg`: title of the message
 * `data`: data of the message ,can be json object
+
 *Example*
  send 'hello' as title and 'world' as data to GameWatcher
 ```javascript
@@ -124,7 +138,7 @@ start/stop the devicemotion event listen
 start/stop the deviceorientation event listen
 ##### disable_vibrate() / enable_vibrate()
 disable/enable vibrate 
-   
+
 #### Events
 * connected---connected to server
 
@@ -146,6 +160,7 @@ License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with SDU_WebJoystick.  If not, see <http://www.gnu.org/licenses/>.
+
 We referred to Node.js with honor, here is its license
 ====
 Copyright Joyent, Inc. and other Node contributors. All rights reserved.
