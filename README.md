@@ -66,6 +66,7 @@ send vabrate message to the gamepad
 Arguments*
 * `uid`: the uid of gamepad
 * `ruler`: the ruler of vibration
+
 ####  Events
 * connected--connected to server
 * stop---stop game signal, the reason given by data
@@ -126,6 +127,8 @@ disable/enable vibrate
    
 #### Events
 * connected---connected to server
+
+
 ## License 
 
 (The LGPL License)
@@ -143,7 +146,6 @@ License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
 along with SDU_WebJoystick.  If not, see <http://www.gnu.org/licenses/>.
-
 We referred to Node.js with honor, here is its license
 ====
 Copyright Joyent, Inc. and other Node contributors. All rights reserved.
@@ -153,7 +155,6 @@ deal in the Software without restriction, including without limitation the
 rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 sell copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in
 all copies or substantial portions of the Software.
 ====
