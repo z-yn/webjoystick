@@ -1,11 +1,11 @@
 
 ## webjoystick
-SDU_WebJoystick a open source project create by FourDays base on Html5
+SDU_WebJoystick a open source project created by Four_Days base on Html5
 websocket and Device API.  we aim to develop a new way to play game--- use
 your mobile as gamepad, so you can play your web games in your PC and use
 he special feature of your phone.
 ## Install
-it's a module of Node.js. first you need install node,see < http://nodejs.org/>
+it's a module of Node.js. firstly, you need to install node,see < http://nodejs.org/>
 with the help of Node Packaged Modules tool npm, you can easily install it by
 
 ```bash
@@ -61,12 +61,14 @@ var gamewatcher = new GameWatcher(url)
 ```
 ##### connect()
 connect to the websocket server
+
 ##### on(msg,func)
 handle the event named `msg` with the function `func`
 *Arguments*
 * `msg`: then event name
 * `func(data)`: the function to handle this event.
     data.uid---the uid of gamepad ;data.gamedata--- the data about the event
+    
 ##### vabrate(uid,ruler)
 send vabrate message to the gamepad
 
@@ -77,8 +79,8 @@ send vabrate message to the gamepad
 ####  Events
 * connected--connected to server
 * stop---stop game signal, the reason given by data
-* gamepadAdded---new gamepad added to server, uid given by data
-* gamepadRemoved----gamepad removed from server, it's uid given by data
+* gamepadAdded---new gamepad added to server, it's uid is given by data
+* gamepadRemoved----gamepad removed from server, it's uid is given by data
 * start---gamepad send start game signal, it's uid given by data 
 * deviceorientation-----DeviceOrientation Event of html5 Device API
 * devicemotion-----DeviceMotion Event of html5 Device API
@@ -145,7 +147,7 @@ disable/enable vibrate
 
 ## License 
 
-    Copyright 2013 FourDays
+    Copyright 2013 Four_Days
     
     SDU_WebJoystick is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
