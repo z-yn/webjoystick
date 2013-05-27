@@ -69,8 +69,8 @@ handle the event named `msg` with the function `func`
 * `func(data)`: the function to handle this event.
     data.uid---the uid of gamepad ;data.gamedata--- the data about the event
     
-##### vabrate(uid,ruler)
-send vabrate message to the gamepad
+##### vibrate(uid,ruler)
+send vibrate message to the gamepad
 
 *Arguments*
 * `uid`: the uid of gamepad
