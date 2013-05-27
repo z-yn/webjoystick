@@ -64,6 +64,7 @@ connect to the websocket server
 
 ##### on(msg,func)
 handle the event named `msg` with the function `func`
+
 *Arguments*
 * `msg`: then event name
 * `func(data)`: the function to handle this event.
@@ -97,7 +98,6 @@ you need add public/javascripts/gamepad.js of the template
 * `uid`: the unique id of a gamepad
 
 *Example*
-
 ```javascript
 var url = "ws://" + document.URL.substr(7).split('/')[0];
 var gamepad = new Gamepad(url,'gamepad1')
@@ -107,6 +107,7 @@ connect to the websocket server
 
 ##### on(msg,func)
 handle the event named `msg` with the function `func`
+
 *Arguments*
 * `msg`: then event name
 * `func(data)`: the function to handle this event.
@@ -136,8 +137,10 @@ gamewatcher.on('hello',function(data) {
 ```
 ##### start_devicemotion() / stop_devicemotion()
 start/stop the devicemotion event listen
+
 ##### start_deviceorientation / stop_deviceorientation()
 start/stop the deviceorientation event listen
+
 ##### disable_vibrate() / enable_vibrate()
 disable/enable vibrate 
 
