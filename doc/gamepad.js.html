@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: gamepad.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: gamepad.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ *    Copyright 2013 FourDays
+ *
+ *   This file is part of SDU_WebJoystick.
+ *
+ *   SDU_WebJoystick is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   SDU_WebJoystick is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *   along with SDU_WebJoystick.  If not, see &lt;http://www.gnu.org/licenses/lgpl.html>.
+ */
+
+
+(function(win) {
+    /**
+     * To construct a gamepad object on the gamepad, which can call the device API and send event data to the game, the gamepad won't connect to the WebSocket by default, please call Gamepad.connect() before use.
+     * @param url The WebSocket url to connect to.
+     * @param uid The id of the gamepad, in multi player games, this will help to distinct events generated from different gamepads.
+     * @class The wrapper in the gamepad, exchanges message with station.
+     */
+    Gamepad = function Gamepad(url, uid) {
+        this.url = url;
+        this.uid = uid;
+        this.x = this.y = this.z = this.last_x = this.last_y = this.last_z =0;
+        this.lastUpdate = 0;
+        this.SHAKE_THRESHOLD =1000;
+        this.time = 0;
+        this.oldtime=0;
+        this.isEnableShake =false;
+        this.isEnableMotion=false;
+
+        this.messageHandlers = {
+            connected: this.connected.bind(this),
+            vibrate: this.vibrate.bind(this)
+        };
+    }
+
+    /**
+     * Send message in json format to the WebSocket, and the GameWatcher on the Station can convert them to events.&lt;br>
+     * A message contains two parts: message type and the data. And is defined as:&lt;br》
+     * {"msg": message, "data": {"uid" : this.uid, "gamedata" : data}}&lt;br>
+     * &lt;strong>Only use this when you want to implement more functions&lt;/strong> because the message is sent automatically.
+     * @param msgs The type of the message, for example, orientations, motions, and button presses.
+     * @param datas The data of the message.
+     */
+    Gamepad.prototype.sendMessage = function(msgs, datas) {
+        try {
+            this.socket.send(JSON.stringify({
+                msg: msgs,
+                data: {
+                    uid: this.uid,
+                    gamedata: datas
+                }
+            }));
+        } catch (e) {
+            console.log(e);
+        }
+    }   ;
+
+    /**
+     *  Connect the gamepad to the WebSocket, thus you can send message to the station or handle messages from the station.
+     */
+    Gamepad.prototype.connect = function() {
+
+        var wsCtor = window['MozWebSocket'] ? MozWebSocket : WebSocket;
+        this.socket = new wsCtor(url, ['control', this.uid]);
+
+        this.socket.onclose = this.handWebsocketClose.bind(this);
+        this.socket.onmessage = this.handleWebsocketMessage.bind(this);
+    };
+
+    /**
+     * Handle message from the station.&lt;br>
+     * &lt;strong>.Not suggested to use even extending the library&lt;/strong>, just add message-function pairs to the messageHandler.
+     * @param message The message from the station.
+     */
+    Gamepad.prototype.handleWebsocketMessage = function(message) {
+        try {
+            var command = JSON.parse(message.data);
+        } catch (e) {
+            //cobsole.log("not JSON message")
+        }
+
+        if (command) {
+            this.dispatchCommand(command);
+        }
+    };
+
+    /**
+     * Method to handle the orientation event, this method is called on both "devicemotion" and "deviceorientation", for a device without "deviceorientation", we use the accelerationIncludingGravity to determinate the orientation.&lt;br>
+     * The gamedata of this message is defined as:&lt;br>
+     * {"alpha": alpha, "beta": beta, "gamma": gamma}, and message type is named as "deviceorientation".&lt;br>
+     * The alpha, beta, gamma above is finally converted -180~180, same as the deviceorientation event in the definition in the HTML5 standard.&lt;br>
+     * @param data Maybe orientation, or motion, so we used many "if"s.&lt;br>
+     * TODO: Exclude the real acceleration acceleration including gravity..&lt;br>
+     */
+    Gamepad.prototype.deviceorientationEvt = function(data) {
+        if (data.x && !data.y){
+            this.sendMessage('deviceorientation', {
+                alpha: data.x * (180 / Math.PI),
+                beta: data.y * (180 / Math.PI),
+                gamma: data.z * (180 / Math.PI)
+            });
+        }else if(data.accelerationIncludingGravity){
+            // window.removeEventListener('deviceorientation', this.orientationListener, false);
+            this.sendMessage('deviceorientation', {
+                gamma: -data.accelerationIncludingGravity.x*10,
+                beta: data.accelerationIncludingGravity.y*10,
+                alpha: data.accelerationIncludingGravity.z*10
+            });
+        }
+        else
+            this.sendMessage('deviceorientation', {
+                alpha: data.alpha,
+                beta: data.beta,
+                gamma: data.gamma
+            }); //deviceorientation
+    } ;
+
+    /**
+     * Method to check if the device is shaked, most games just need to check if the device is shaked, don't need more information.
+     * @param data This is the acceleration data.
+     * TODO: Implement a more accurate method to check if the device is shaked.
+     */
+    Gamepad.prototype.checkShake = function(data) {
+        var acceleration = data.accelerationIncludingGravity;
+
+        var curTime = new Date().getTime();
+
+        if ((curTime - this.lastUpdate) > 100) {
+
+            var diffTime = (curTime - this.lastUpdate);
+            this.lastUpdate = curTime;
+
+            this.x = acceleration.x;
+            this.y = acceleration.y;
+            this.z = acceleration.z;
+
+            var sd = Math.abs(this.x+this.y+this.z-this.last_x-this.last_y-this.last_z) / diffTime * 10000;
+            this.time = new Date().getTime();
+
+            if ((sd > this.SHAKE_THRESHOLD)&&((this.time-this.oldtime)>500) ){
+
+                this.oldtime = this.time;
+                this.sendMessage('shake',{speed:this.x-this.last_x})    ;
+            }
+            this.last_x = this.x;
+            this.last_y = this.y;
+            this.last_z = this.z;
+        }
+    } ;
+
+    /**
+     * Method to check if the device is shaked and send the "devicemotion" event to the station.&lt;br>
+     * The gamedata of the shake message is defined as:&lt;br>
+     * {"speed": speed} and the message type is named as "shake".&lt;br>
+     * The gamedata of the acceleration event is defined as:&lt;br>
+     * {"x": x, "y": y, "z":z}&lt;br>
+     * And the definition is same as the HTML5 standard.&lt;br>
+     * The speed is the delta of the acceleration on the x axis, so just hold the gamepad in landscape view and shake the device left or right.
+     * @param event The device motion event.
+     */
+    Gamepad.prototype.devicemotionEvt = function(event) {
+
+        if(this.isEnableShake) {
+            this.checkShake(event).bind(this);
+        }
+
+        if(this.isEnableMotion) {
+            this.sendMessage('devicemotion', {
+                accelerationIncludingGravity: {
+                    x: event.accelerationIncludingGravity.x,
+                    y: event.accelerationIncludingGravity.y,
+                    z: event.accelerationIncludingGravity.z
+                }
+            });
+        }
+    } ;
+
+    /**
+     * Send a message "start" to the station.
+     */
+    Gamepad.prototype.startGame = function() {
+        this.sendMessage('start', this.uid);
+    } ;
+
+    /**
+     * Send a message "stop" to the station.
+     */
+    Gamepad.prototype.stopGame = function() {
+        this.sendMessage('stop', this.uid);
+    }  ;
+
+    /**
+     * Callback when the connection is closed.&lt;br>
+     * &lt;strong>Should rewrie this method to do something more when the connection is closed&lt;/strong>
+     */
+    Gamepad.prototype.handWebsocketClose = function() {
+        alert("connection closed");
+    }   ;
+
+    /**
+     * Callback when the connection is established.&lt;br>
+     * &lt;strong>Should rewrie this method to do something more when the connection is established&lt;/strong>
+     * @param command
+     */
+    Gamepad.prototype.connected = function(command) {
+        // what to do when it is connected
+        //document.getElementById('message').innerHTML="connected";
+    };
+
+    /**
+     * Callback when the station requires the device to vibrate.&lt;br>
+     * Or call this method when something happened on the gamepad may course the device to vibrate.
+     * @param data The data is a integer representing the duration to vibrate in mill-second.
+     */
+    Gamepad.prototype.vibrate = function(data) {
+        if (navigator.vibrate) {
+            navigator.vibrate(data);
+        } else if (navigator.webkitVibrate) {
+            navigator.webkitVibrate(data);
+        } else {
+            //do nothing
+        }
+
+    }
+
+    /**
+     * Call the corresponding method when a message is received.
+     * @param command The type of the message.
+     */
+    Gamepad.prototype.dispatchCommand = function(command) {
+
+        // Do we have a handler function for this command?
+        var handler = this.messageHandlers[command.msg];
+        if (typeof(handler) === 'function') { //call only when it is function
+            // If so, call it and pass the parameter data
+            handler.call(this, command.data);
+        }
+
+    };
+
+    /**
+     * Disable the deviceorientation event, thus no orientation message will be sent to the station..
+     */
+    Gamepad.prototype.stop_deviceorientation = function() {
+        /*if ((window.DeviceOrientationEvent)) {
+         window.addEventListener('deviceorientation', function(data) {}, false);
+         window.addEventListener('MozOrientation', function(data) {}, false);
+         } else {
+         alert("not support deviceorientation");
+         } */
+    }
+    /**
+     * Enable the deviceorientation event, and game-pad will automatically send orientation message to the station.
+     */
+    Gamepad.prototype.start_deviceorientation = function() {
+        if (window.DeviceOrientationEvent){
+            //  window.addEventListener('deviceorientation', this.deviceorientationEvt.bind(this), true);
+            //  window.addEventListener('MozOrientation', this.deviceorientationEvt.bind(this), true);
+            window.addEventListener('devicemotion', this.deviceorientationEvt.bind(this), true);
+        } else {
+            alert("not support deviceorientation");
+        }
+    }
+
+    /**
+     * Enable the shake event, and game-pad will automatically send shake message to the station.
+     */
+    Gamepad.prototype.enable_shake = function() {
+
+        if ((window.DeviceMotionEvent)) {
+            this.isEnableShake = true;
+            window.addEventListener('devicemotion', this.devicemotionEvt.bind(this), true);
+        } else {
+            alert("not support devicemotion");
+        }
+    }
+
+    /**
+     * Disable the shake event, thus no shake message will be sent to the station..
+     */
+    Gamepad.prototype.disable_shake = function() {
+        this.isEnableShake =false;
+        if ((window.DeviceMotionEvent)) {
+            this.isEnableShake =false;
+        } else {
+            alert("not support deviceorientation");
+        }
+    }
+
+    /**
+     * Disable the devicemotion event, thus no motion message will be sent to the station..
+     */
+    Gamepad.prototype.stop_devicemotion = function() {
+        if ((window.DeviceMotionEvent)) {
+            this.isEnableMotion =false;
+        } else {
+            alert("not support deviceorientation");
+        }
+    }
+
+    /**
+     * Enable the devicemotion event, and game-pad will automatically send devicemotion message to the station.
+     */
+    Gamepad.prototype.start_devicemotion = function() {
+        if ((window.DeviceMotionEvent)) {
+            this.isEnableMotion = true;
+            window.addEventListener('devicemotion', this.devicemotionEvt.bind(this), true);
+        } else {
+            alert("not support devicemotion");
+        }
+    }
+
+
+    /**
+     * Disable vibrate on the game-pad, the game-pad won't vibrate even the station requires it to do so.
+     */
+    Gamepad.prototype.disable_vibrate = function() {
+        this.on('vibrate', function(data) {});
+    }
+
+    /**
+     * Enable vibrate on the game-pad, the game-pad will vibrate when the station requires it to do so.
+     */
+    Gamepad.prototype.enable_vibrate = function() {
+        this.on('vibrate', this.vibrate.bind(this));
+    }
+
+    /**
+     * Register a message-function pair, thus the function will be called when corresponding message arrived.
+     * @param msg The type of the message.
+     * @param func The function to call.
+     */
+    Gamepad.prototype.on = function(msg, func) {
+        //register when it is a function
+        if (typeof(func) === 'function') {
+            this.messageHandlers[msg] = func;
+        } else {
+            //console.log(msg+':you must register a function for the event');   
+        }
+    }
+    win.Gamepad = Gamepad;
+})(window);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Gamepad.html">Gamepad</a></li><li><a href="GameWatcher.html">GameWatcher</a></li><li><a href="UIManager.html">UIManager</a></li></ul><h3>Namespaces</h3><ul><li><a href="gamepad-components.html">gamepad-components</a></li><li><a href="gamewatcher-event.html">gamewatcher-event</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed Sep 11 2013 23:31:14 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

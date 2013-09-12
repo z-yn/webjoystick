@@ -3,19 +3,19 @@
  *  
  *   This file is part of SDU_WebJoystick.
  *
- *   SDU_WebJoystick is free software: you can redistribute it and/or modify
+ *   WebJoystick is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
  *   the Free Software Foundation, either version 3 of the License, or
  *   (at your option) any later version.
  *
- *   SDU_WebJoystick is distributed in the hope that it will be useful,
+ *   WebJoystick is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU Lesser General Public License for more details.
  *
  *
  *   You should have received a copy of the GNU Lesser General Public License
- *   along with SDU_WebJoystick.  If not, see <http://www.gnu.org/licenses/lgpl.html>.
+ *   along with WebJoystick.  If not, see <http://www.gnu.org/licenses/lgpl.html>.
  */
 
 (function(win) {
@@ -40,7 +40,6 @@
 
         var wsCtor = window['MozWebSocket'] ? MozWebSocket : WebSocket;
         this.socket = new wsCtor(this.url, 'host');
-
         this.socket.onmessage = this.handleWebsocketMessage.bind(this);
         this.socket.onclose = this.handleWebsocketClose.bind(this);
     };
@@ -48,6 +47,8 @@
     GameWatcher.prototype.handleWebsocketMessage = function(message) {
         try {
             var command = JSON.parse(message.data);
+            //if (command.msg != "deviceorientation")
+            //    console.log(command);
         } catch (e) {
             //console.log(e);
             //cobsole.log("not JSON message");
@@ -74,6 +75,8 @@
     GameWatcher.prototype.connected = function(command) {
         // what to do when it is connected
         // document.getElementById('message').innerHTML="connected";
+        this.serverIP = command.hostIP;
+        console.log(command.hostIP);
     };
 
     GameWatcher.prototype.vibrate = function(uid, ruler) {

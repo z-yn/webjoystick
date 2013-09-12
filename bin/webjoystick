@@ -159,9 +159,9 @@ function createApplicationAt(path) {
     console.log();
     console.log('   install dependencies:');
     if(program.example) 
-	console.log('     $ cd %s/GravityMaze && npm install', path);
+	    console.log('     $ cd %s/GravityMaze && npm install', path);
     else 
-	console.log('     $ cd %s && npm install', path);
+	    console.log('     $ cd %s && npm install', path);
     console.log();
     console.log('   run the app:');
     console.log('     $ node app.js');

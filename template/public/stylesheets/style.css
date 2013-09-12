@@ -6,3 +6,38 @@ body {
 a {
   color: #00B7FF;
 }
+.oval {
+    position: absolute;
+    left: 200px;
+    top: 200px;
+    width: 100px;
+    height: 150px;
+    background: red;
+    -moz-border-radius: 50px / 75px;
+    -webkit-border-radius: 50px / 75px;
+    border-radius: 50px / 75px;
+}
+.scroll {
+    position: absolute;
+    left: 100px;
+    top: 245px;
+    width: 500px;
+    height: 50px;
+
+    background: url("images/scroll_bg.gif") center  repeat-x;
+    background-size:contain
+}
+
+.halo {
+    position: absolute;
+    border:1px solid #f60;
+    box-shadow: 0px 0px 100px 10px #b5d334, inset 0px 0px 100px 10px #b5d334;
+}
+.circle {
+    position: absolute;
+    left: 70;
+    top: 70;
+    border:1px solid #f60; width:320px; height:320px; margin:0 auto;
+    border-radius:160px;
+    visibility:hidden;
+}

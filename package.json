@@ -4,10 +4,45 @@
   "private": false,
   "dependencies": {
     "websocket": "1.0.8",
-    "commander":"1.1.1",
+    "commander": "1.1.1",
     "mkdirp": "0.3.4"
   },
   "bin": {
     "webjoystick": "./bin/webjoystick"
-  }
+  },
+  "readmeFilename": "README.md",
+  "gitHead": "08583669f932c0fde586dd2b90479396e719342a",
+  "description": "SDU_WebJoystick a open source project create by FourDays base on Html5 websocket and Device API.  we aim to develop a new way to play game--- use your mobile as gamepad, so you can play your web games in your PC and use he special feature of your phone. ## Install it's a module of Node.js. first you need install node,see < http://nodejs.org/> with the help of Node Packaged Modules tool npm, you can easily install it by",
+  "main": "index.js",
+  "directories": {
+    "example": "example",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/z-yn/webjoystick.git"
+  },
+  "keywords": [
+    "webjoystick",
+    "gamepad",
+    "mobile",
+    "html5"
+  ],
+  "author": {
+    "name": "FourDays"
+  },
+  "license": "LGPL",
+  "bugs": {
+    "url": "https://github.com/z-yn/webjoystick/issues"
+  },
+  "readme": "\n## webjoystick\nSDU_WebJoystick a open source project create by FourDays base on Html5\nwebsocket and Device API.  we aim to develop a new way to play game--- use\nyour mobile as gamepad, so you can play your web games in your PC and use\nhe special feature of your phone.\n## Install\nit's a module of Node.js. first you need install node,see < http://nodejs.org/>\nwith the help of Node Packaged Modules tool npm, you can easily install it by\n\n```bash\n    # npm install webjoystick -g\n```\nor download the source by\n    \n```bash\n    $ git clone https://github.com/z-yn/webjoystick.git\n```\nand run\n\n```bash\n    # npm install ./webjoystick/ -g\n```\n\n## Quick start\nif you install webjoystick as global with option -g\nyou can create a simple template project by \n\n```bash\n    $ webjoystick <foldername>\n```\nor just deploy a simple example by\n\n```bash\n    $ webjoystick -e <foldername>\n```\n## Usage\n### webjoystick\n```javascript\n  var webjoystick = require('webjoystick');\n  var server = webjoystick.createServer(config);\n```\nconfig is used to create a websocket server,so you can see\n<https://github.com/Worlize/WebSocket-Node/wiki/Documentation>\n  \n### GameWatcher\nyou need add public/javascripts/gamewatcher.js of the template\n#### Methods\n\n##### GameWatcher(url)\n\n*Arguments*\n\n* `url`: the url of the websocket\n\n*Example*\n\n```javascript\nvar url = \"ws://\" + document.URL.substr(7).split('/')[0];\nvar gamewatcher = new GameWatcher(url)\n```\n##### connect()\nconnect to the websocket server\n##### on(msg,func)\nhandle the event named `msg` with the function `func`\n*Arguments*\n* `msg`: then event name\n* `func(data)`: the function to handle this event.\n    data.uid---the uid of gamepad ;data.gamedata--- the data about the event\n##### vabrate(uid,ruler)\nsend vabrate message to the gamepad\n\n*Arguments*\n* `uid`: the uid of gamepad\n* `ruler`: the ruler of vibration\n\n####  Events\n* connected--connected to server\n* stop---stop game signal, the reason given by data\n* gamepadAdded---new gamepad added to server, uid given by data\n* gamepadRemoved----gamepad removed from server, it's uid given by data\n* start---gamepad send start game signal, it's uid given by data \n* deviceorientation-----DeviceOrientation Event of html5 Device API\n* devicemotion-----DeviceMotion Event of html5 Device API\n\n### Gamepad\nyou need add public/javascripts/gamepad.js of the template\n    \n#### Methods\n\n##### Gamepad(url,uid)\n\n*Arguments*\n* `url`: the url of the websocket\n* `uid`: the unique id of a gamepad\n\n*Example*\n\n```javascript\nvar url = \"ws://\" + document.URL.substr(7).split('/')[0];\nvar gamepad = new Gamepad(url,'gamepad1')\n```\n##### connect()\nconnect to the websocket server\n\n##### on(msg,func)\nhandle the event named `msg` with the function `func`\n*Arguments*\n* `msg`: then event name\n* `func(data)`: the function to handle this event.\n    data.uid---the uid of gamepad ;data.gamedata--- the data about the event\n    \n##### sendMessage（msg,data)\nsend message to GameWatcher,it can deal with by on(msg,data) in GameWatcher\n\n*Arguments*\n* `msg`: title of the message\n* `data`: data of the message ,can be json object\n\n*Example*\nsend 'hello' as title and 'world' as data to GameWatcher\n```javascript\nvar url = \"ws://\" + document.URL.substr(7).split('/')[0];\nvar gamepad = new Gamepad(url,'gamepad1')\ngamepad.sendMessage('hello','world');\n```\nand GameWatcher get message like\n\n```javascript\ngamewatcher.on('hello',function(data) {\n    console.log(data.uid);//\"gamepad1\"\n    console.log(data.gamedata);//\"world\"\n});\n```\n##### start_devicemotion() / stop_devicemotion()\nstart/stop the devicemotion event listen\n##### start_deviceorientation / stop_deviceorientation()\nstart/stop the deviceorientation event listen\n##### disable_vibrate() / enable_vibrate()\ndisable/enable vibrate \n\n#### Events\n* connected---connected to server\n\n\n## License \n\n    Copyright 2013 FourDays\n    \n    SDU_WebJoystick is free software: you can redistribute it and/or modify\n    it under the terms of the GNU Lesser General Public License as published by\n    the Free Software Foundation, either version 3 of the License, or (at your\n    option) any later version.\n\n    SDU_WebJoystick is distributed in the hope that it will be useful, but\n    WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY\n    or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public\n    License for more details.\n\n    You should have received a copy of the GNU Lesser General Public License\n    along with SDU_WebJoystick.  If not, see <http://www.gnu.org/licenses/>. \n\n    We referred to Node.js with honor, here is its license\n    ====\n    Copyright Joyent, Inc. and other Node contributors. All rights reserved.\n    Permission is hereby granted, free of charge, to any person obtaining a copy\n    of this software and associated documentation files (the \"Software\"), to\n    deal in the Software without restriction, including without limitation the\n    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or\n    sell copies of the Software, and to permit persons to whom the Software is\n    furnished to do so, subject to the following conditions:\n\n    The above copyright notice and this permission notice shall be included in\n    all copies or substantial portions of the Software.\n    ====\n",
+  "_id": "webjoystick@0.0.1",
+  "dist": {
+    "shasum": "783122fd2c027f0a4f0b84f1586a7ee6244cda83"
+  },
+  "_from": "webjoystick@0.0.1",
+  "_resolved": "https://registry.npmjs.org/webjoystick/-/webjoystick-0.0.1.tgz"
 }

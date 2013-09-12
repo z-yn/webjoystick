@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: UIManager.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: UIManager.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ * Created with JetBrains WebStorm.
+ * User: zouyanan
+ * Date: 13-9-6
+ * Time: 下午3:21
+ * To change this template use File | Settings | File Templates.
+ */
+
+(function(win) {
+    /**
+     * Create a UIManager for a gamepad, a UIManager can help to create some components with a default action.
+     * @param gamepad The gamepad used for sending message.
+     * @constructor
+     * @class Help to create some components with a default action.
+     */
+    UIManager = function( gamepad )
+    {
+        this.gamepad = gamepad;
+    };
+
+    /**
+     * This init method is used for create action for buttons, sticks, and sliders.&lt;br>
+     * Also this method can help to prevent some default events, for example, slide to forward or back in UCBrowser.
+     */
+    UIManager.prototype.init = function()
+    {
+        this.preventTouch();
+        this.initStick();
+        this.initSlider();
+        this.initButton();
+    }
+
+    /**
+     * @private
+     * @param msg
+     * @param data
+     */
+    function sendMessage(msg, data){
+        this.gamepad.sendMessage(msg, data);
+    }
+
+    /**
+     * This method can help to prevent some default events, for example, slide to forward or back in UCBrowser.
+     */
+    UIManager.prototype.preventTouch = function() {
+        window.addEventListener('touchstart',function(event){
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        window.addEventListener('touchmove',function(event){
+            event.preventDefault();
+            event.stopPropagation();
+        });
+        window.addEventListener('touchend',function(event){
+            event.preventDefault();
+            event.stopPropagation();
+        });
+    }
+
+    /**
+     * This method is used for creating sticks according to divs' class name, a div with class name "stick" will be append a handle as a child, and automatically send message when the handle is dragged.&lt;br>
+     * Message is in three types:"dragStart", "dragMove", "dragEnd".&lt;br>
+     * The gamedata of a message is defined as:&lt;br>
+     * For "dragStart" and "dragMove":{"id": stick.id, "position":{"x": x, "y": y}}&lt;br>
+     * For "dragEnd":{id: stick.id};&lt;br>
+     * And position.x and position.y above is normalized in range(-1, 1);
+     */
+    UIManager.prototype.initStick = function(){
+        var circles = document.getElementsByClassName("stick");
+
+        function moveHalo(event, type){
+            var src = event.srcElement;
+            var cir = src.parentNode;
+            var rec = cir.getBoundingClientRect();
+            //fixRect(rec);
+            event.x = event.targetTouches[0].clientX;
+            event.y = event.targetTouches[0].clientY;
+            var ox = rec.left + rec.width / 2, oy = rec.top + rec.height / 2;
+
+            var dx = event.x - ox, dy = event.y - oy;
+            var px = dx / rec.width * 2, py = dy / rec.height * 2;
+            var len = Math.sqrt(px * px + py * py);
+            if (len > 1){
+                dx /= len;
+                dy /= len;
+                px /= len;
+                py /= len;
+            }
+            src.style.left = dx + rec.width / 4 + "px";
+            src.style.top = dy + rec.height / 4 +"px";
+            sendMessage(type, {id:cir.id , position:{x:px,y:py}});
+        }
+        for (var i = 0; i &lt; circles.length; i ++){
+            var stick_style = window.getComputedStyle(circles[i],null);
+            if(stick_style.width>stick_style.height) {
+                circles[i].style.width = stick_style.height;
+            } else {
+                circles[i].style.height = stick_style.width;
+            }
+
+            var stick = document.createElement("div");
+            stick.className = "stick-handle";
+            var rect = circles[i].getBoundingClientRect();
+            stick.style.width = 0.5 * rect.width +"px";
+            stick.style.height = 0.5 * rect.height + "px";
+            stick.style.left = rect.width / 4 + "px";
+            stick.style.top = rect.height / 4 + "px";
+            stick.style.borderRadius = "100%";
+            circles[i].appendChild(stick);
+            stick.addEventListener('touchstart', function(event){
+                moveHalo(event, 'dragStart');
+                event.preventDefault();
+                event.stopPropagation();
+            });
+
+            stick.addEventListener('touchmove', function(event) {
+                moveHalo(event, 'dragMove');
+                event.preventDefault();
+                event.stopPropagation();
+            });
+
+            stick.addEventListener('touchend', function(event) {
+
+                var src = event.srcElement;
+                var cir = src.parentNode;
+                var rec = cir.getBoundingClientRect();
+                src.style.top = rec.height / 4 + 'px';
+                src.style.left = rec.width / 4 + 'px';
+
+                sendMessage('dragEnd', {id:cir.id});
+                event.preventDefault();
+                event.stopPropagation();
+            });
+
+        }
+
+    }
+
+    /**
+     * This method is used for creating buttons according to divs' className, a div with class name "pad-button" will automatically send message when it is pressed or released.&lt;br>
+     * Message is in two types:"buttonDown", "buttonUp".&lt;br>
+     * The gamedata for both "buttonDown" and "buttonUp" messages is defined as:&lt;br>
+     * {"id": button.id}&lt;br>
+     */
+    UIManager.prototype.initButton = function(){
+        var buttons = document.getElementsByClassName('pad-button');
+        for (var i = 0; i &lt; buttons.length; i ++){
+            //alert(this.gamepad);
+            buttons[i].addEventListener('touchstart', function(event){
+                sendMessage('buttonDown', {id: event.srcElement.id});
+            });
+            buttons[i].addEventListener('touchmove',function(event){
+                event.preventDefault();
+                event.stopPropagation();
+            })
+            buttons[i].addEventListener('touchend', function(event){
+                sendMessage('buttonUp', {id: event.srcElement.id});
+            });
+        }
+    }
+
+    /**
+     * This method is used for creating sliders according to divs, a div with class name "slider" will be append a handle as a child, and automatically send message when the handle is dragged.&lt;br>
+     * Message is in three types:"sliderStart", "sliderMove", "sliderEnd".&lt;br>
+     * The gamedata of a message is defined as:&lt;br>
+     * For "sliderStart" and "sliderMove":{"id": slider.id, "position": x}&lt;br>
+     * For "sliderEnd":{id: slider.id};&lt;br>
+     * And position above is normalized in range(-1, 1);
+     */
+    UIManager.prototype.initSlider = function() {
+        var sliders = document.getElementsByClassName('slider');
+        for(var i = 0; i &lt; sliders.length; i ++) {
+            var slider = sliders[i];
+            var handle = document.createElement('div');
+            handle.className = 'slider-handle' ;
+            var rect = slider.getBoundingClientRect();
+            handle.style.width = 2 * rect.height + "px";
+            handle.style.height = 3 * rect.height + "px";
+            handle.style.left = rect.width / 2 - rect.height;
+            handle.style.top = -rect.height;
+            handle.style.borderRadius=rect.height +"px/" +rect.height*3 /2 +"px";
+
+            slider.appendChild(handle);
+
+            handle.addEventListener('touchstart',function(event){
+                var src = event.srcElement;
+                var slider = src.parentNode;
+                var rect = slider.getBoundingClientRect();
+                var touch = event.targetTouches[0];
+                var ox = rect.left + rect.width / 2;
+                var dx = touch.clientX - ox;
+                var px = dx / rect.width * 2;
+                if (px > 1){
+                    dx /= px;
+                    px = 1;
+                }
+                src.style.left = dx + rect.width / 2 - rect.height / 2 + "px";
+
+                sendMessage('sliderStart',{id:slider.id, position:px});
+                event.preventDefault();
+                event.stopPropagation();
+            });
+            handle.addEventListener('touchmove',function(event){
+                var src = event.srcElement;
+                var slider = src.parentNode;
+                var rect = slider.getBoundingClientRect();
+                var touch = event.targetTouches[0];
+                var ox = rect.left + rect.width / 2;
+                var dx = touch.clientX - ox;
+                var px = dx / rect.width * 2;
+                if (px > 1){
+                    dx /= px;
+                    px = 1;
+                }
+                src.style.left = dx + rect.width / 2 - rect.height + "px";
+                sendMessage('sliderMove',{id:slider.id, position:px});
+                event.preventDefault();
+                event.stopPropagation();
+            });
+            handle.addEventListener('touchend',function(event){
+                var src = event.srcElement;
+                var slider = src.parentNode;
+                var rect = slider.getBoundingClientRect();
+                src.style.left = rect.width / 2 - rect.height + "px";
+                event.preventDefault();
+                event.stopPropagation();
+                sendMessage('sliderEnd',{id:slider.id});
+            })  ;
+        }
+    }
+    win.UIManager = UIManager;
+})(window);
+/**
+ * Gamepad-components are some pre-defined tag class.
+ * @namespace gamepad-components
+ */
+
+/**
+ * Stick is a circular handle in a larger basing circle, the handle can be dragged to any position in the circle, and on each drag event, it will send message to the station with type "dragMove" or "dragStart", messages are defined as:&lt;br>
+ * {"id": stick.id, "position":{"x": x, "y": y}}&lt;br>
+ * The x, y in the position is normalized in the range(-1, 1).&lt;br>
+ * The id is the DOM element's id.&lt;br>
+ * And when the drag is end, it will send message with type "dragEnd" and without position.&lt;br>
+ * Sticks' basing circle should have class name "stick" and tag name "div", and call UIManager.init() or UIManager.initSticks() then the handle and events will be added&lt;br>
+ * The auto added handle would have class name "stick-handle".
+ * @name gamepad-components#stick
+ */
+
+/**
+ * Sliders is a handle on a rail, the handle can be dragged on the rail, and on each drag event, it will send message to the station with type "sliderMove" or "sliderStart", messages are defined as:&lt;br>
+ * {"id": slider.id, "position": x}&lt;br>
+ * And when the drag is end, it will send message with type "sliderEnd" and without position&lt;br>
+ * The position is normalized in the range(-1, 1).&lt;br>.
+ * The id is the DOM element's id.&lt;br>
+ * Sliders should have class name "slider" and tag name "div", and call UIManager.init() or UIManager.initSlider() then the handle and events will be added&lt;br>
+ * The handle should have class name "slider-handle".
+ * @name gamepad-components#slider
+ */
+
+/**
+ * Buttons has two events, "buttonDown" and "buttonUp", and both of them is defined as:&lt;br>
+ * @example{"id": button.id}&lt;br>
+ * The id is the DOM element's id.&lt;br>
+ * Buttons should have class name "pad-button" and tag name "div", and call UIManager.init() or UIManager.initButton() then the events will be added&lt;br>
+ * @name gamepad-components#button
+ */</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Gamepad.html">Gamepad</a></li><li><a href="GameWatcher.html">GameWatcher</a></li><li><a href="UIManager.html">UIManager</a></li></ul><h3>Namespaces</h3><ul><li><a href="gamepad-components.html">gamepad-components</a></li><li><a href="gamewatcher-event.html">gamewatcher-event</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed Sep 11 2013 23:31:14 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

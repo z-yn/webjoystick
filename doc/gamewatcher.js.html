@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: gamewatcher.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: gamewatcher.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>/**
+ *    Copyright 2013 FourDays
+ *
+ *   This file is part of SDU_WebJoystick.
+ *
+ *   SDU_WebJoystick is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU Lesser General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   SDU_WebJoystick is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU Lesser General Public License for more details.
+ *
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *   along with SDU_WebJoystick.  If not, see &lt;http://www.gnu.org/licenses/lgpl.html>.
+ */
+
+(function(win) {
+    /**
+     * To construct a GameWatcher object on the station, which can handle messages from Gamepad, the GameWatcher won't connect to the WebSocket by default, please call GameWatcher.connect() before use.
+     * @param url The server url to connect.
+     * @constructor
+     * @class The wrapper in the station, exchanges message with gamepads.
+     */
+    GameWatcher = function(url) {
+        this.serverIP = undefined;
+        this.url = url;
+        this.messageHandlers = {
+            connected: this.connected.bind(this)
+        };
+    };
+
+    /**
+     * Send message to the gamepad,&lt;br>
+     * Message contain three parts and is defind as:&lt;br>
+     * {"msg": message, "data": {"uid" : uuid, "msg": msgs, "data" : datas}}&lt;br>
+     * &lt;strong>Only use this when you want to implement more functions&lt;/strong> because the message is sent automatically.
+     * @param msgs The type of the message.
+     * @param uuid The gamepad uid to send message to.
+     * @param datas The data of the message.
+     */
+    GameWatcher.prototype.sendMessage = function(msgs, uuid, datas) {
+        this.socket.send(JSON.stringify({
+            uid: uuid,
+            msg: msgs,
+            data: datas
+        }));
+    }
+
+    /**
+     *  Connect the GameWatcher to the WebSocket, thus you can send messages to the gamepad or handle messages from the gamepad.
+     */
+    GameWatcher.prototype.connect = function() {
+
+        var wsCtor = window['MozWebSocket'] ? MozWebSocket : WebSocket;
+        this.socket = new wsCtor(this.url, 'host');
+        this.socket.onmessage = this.handleWebsocketMessage.bind(this);
+        this.socket.onclose = this.handleWebsocketClose.bind(this);
+    };
+
+    /**
+     * Handle message from the gamepad.&lt;br>
+     * &lt;strong>.Not suggested to use even extending the library&lt;/strong>, just use 'on' function to message-function pairs to the messageHandler.
+     * @param message
+     */
+    GameWatcher.prototype.handleWebsocketMessage = function(message) {
+        try {
+            var command = JSON.parse(message.data);
+        } catch (e) {
+            //console.log(e);
+            //cobsole.log("not JSON message");
+        }
+
+        if (command) {
+            this.dispatchCommand(command);
+        }
+    };
+
+    /**
+     * Callback when the connection is closed.&lt;br>
+     * &lt;strong>Should rewrie this method to do something more when the connection is closed&lt;/strong>
+     */
+    GameWatcher.prototype.handleWebsocketClose = function() {
+        alert("WebSocket Connection Closed.");
+    };
+
+    /**
+     * Call the corresponding method when a message is received.
+     * @param command The type of the message.
+     */
+    GameWatcher.prototype.dispatchCommand = function(command) {
+        // Do we have a handler function for this command?
+        var handler = this.messageHandlers[command.msg];
+        if (typeof(handler) === 'function') { //call only when it is function
+            // If so, call it and pass the parameter data
+            handler.call(this, command.data);
+        }
+    };
+
+    /**
+     * Callback when the connection is established.&lt;br>
+     * &lt;strong>Should rewrie this method to do something more when the connection is established&lt;/strong>
+     * @param command
+     */
+    GameWatcher.prototype.connected = function(command) {
+        // what to do when it is connected
+        // document.getElementById('message').innerHTML="connected";
+        this.serverIP = command.hostIP;
+        console.log(command.hostIP);
+    };
+
+    /**
+     * Notice the gamepad to vibrate.
+     * @param uid The uid of the gamepad should vibrate
+     * @param duration A integer representing the duration to vibrate in mill-second.
+     */
+    GameWatcher.prototype.vibrate = function(uid, duration) {
+        this.sendMessage('vibrate', uid, duration);
+    }
+    /**
+     * Register a message-function pair, thus the function will be called when corresponding message arrived.
+     * @param msg The type of the message.
+     * @param func The function to call.
+     */
+    GameWatcher.prototype.on = function(msg, func) {
+        //register when it is a function
+        if (typeof(func) === 'function') {
+            this.messageHandlers[msg] = func;
+        } else {
+            //console.log(msg+':you must register a function for the event');   
+        }
+    }
+    win.GameWatcher = GameWatcher;
+})(window);
+/**
+ * Event from gamepad, currently isn't in standard format, use 'GameWatcher.on()' to handle
+ * @namespace gamewatcher-event
+ */
+/**
+ * Device orientation event&lt;br>
+ * Defined as:&lt;br>
+ * {"alpha": alpha, "beta": beta, "gamma": gamma}, and message type is named as "deviceorientation".&lt;br>
+ * Same as the definition in HTML5 standard.&lt;br>
+ * @name gamewatcher-event#deviceorientation
+ * @see http://dev.w3.org/geo/api/spec-source-orientation
+ */
+/**
+ * The gamedata of the acceleration event is defined as:&lt;br>
+ * {"x": x, "y": y, "z":z}&lt;br>
+ * And the definition is same as the HTML5 standard(withgravity).&lt;br>
+ * @name gamewatcher-event#devicemotion
+ */
+/**
+ * The gamedata of the shake event is defined as:&lt;br>
+ * {"speed": speed}&lt;br>
+ * Speed &lt; 0 means the delta of acceleration is to the left&lt;br>
+ * @name gamewatcher-event#shake
+ */
+/**
+ * Stick is a circular handle in a larger basing circle, the handle can be dragged to any position in the circle, and on each drag event, it will send message to the station with type "dragMove" or "dragStart", messages are defined as:&lt;br>
+ * {"id": stick.id, "position":{"x": x, "y": y}}&lt;br>
+ * The x, y in the position is normalized in the range(-1, 1).&lt;br>
+ * The id is the DOM element's id.&lt;br>
+ * And when the drag is end, it will send message with type "dragEnd" and without position.&lt;br>
+ * @name gamewatcher-event#stick
+ */
+/**
+ * Sliders is a handle on a rail, the handle can be dragged on the rail, and on each drag event, it will send message to the station with type "sliderMove" or "sliderStart", messages are defined as:&lt;br>
+ * {"id": slider.id, "position": x}&lt;br>
+ * And when the drag is end, it will send message with type "sliderEnd" and without position&lt;br>
+ * The position is normalized in the range(-1, 1).&lt;br>.
+ * The id is the DOM element's id.&lt;br>
+ * @name gamewatcher-event#slider
+ */
+/**
+ * Buttons has two events, "buttonDown" and "buttonUp", and both of them is defined as:&lt;br>
+ * {"id": button.id}&lt;br>
+ * The id is the DOM element's id.&lt;br>
+ * @name gamewatcher-event#button
+ */</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Gamepad.html">Gamepad</a></li><li><a href="GameWatcher.html">GameWatcher</a></li><li><a href="UIManager.html">UIManager</a></li></ul><h3>Namespaces</h3><ul><li><a href="gamepad-components.html">gamepad-components</a></li><li><a href="gamewatcher-event.html">gamewatcher-event</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed Sep 11 2013 23:31:14 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

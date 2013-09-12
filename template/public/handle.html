@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <script src="javascripts/gamepad.js"></script>
+    <style>
+        .circle{
+            width: 90px;
+            height:90px;
+        }
+        .mini {
+            width: 70px;
+            height: 70px;
+        }
+        #up {
+            position:absolute;
+            left:16%;
+            top:20%;
+            -webkit-border-radius:45px;
+            -moz-border-radius:45px;
+            -o-border-radius:45px;
+            border-radius:45px;
+            background: url(images/up.png) no-repeat;
+            background-size:cover
+        }
+        #down {
+            position:absolute;;
+            left:16%;
+            top:56%;
+            -webkit-border-radius:45px;
+            -moz-border-radius:45px;
+            -o-border-radius:45px;
+            border-radius:45px;
+            background: url(images/down.png) no-repeat;
+            background-size:cover
+        }
+        #left {
+            position: absolute;
+            left:4%;
+            top:38%;
+            -webkit-border-radius:45px;
+            -moz-border-radius:45px;
+            -o-border-radius:45px;
+            border-radius:45px;
+            background: url(images/left.png) no-repeat;
+            background-size:cover
+        }
+        #right {
+            position:absolute;
+            left:28%;
+            top:38%;
+            -webkit-border-radius:45px;
+            -moz-border-radius:45px;
+            -o-border-radius:45px;
+            border-radius:45px;
+            background: url(images/right.png) no-repeat;
+            background-size:cover
+        }
+        #start {
+            position: absolute;
+            left:42%;
+            top:62%;
+            background: url(images/start.png) no-repeat;
+            background-size:cover
+        }
+        #select {
+            position:absolute;
+            left: 55%;
+            top:62%;
+            background: url(images/select.png) no-repeat;
+            background-size:cover
+        }
+        #A {
+            position: absolute;
+            left:64%;
+            top:36%;
+            -webkit-border-radius:45px;
+            -moz-border-radius:45px;
+            -o-border-radius:45px;
+            border-radius:45px;
+            background: url(images/A.png) no-repeat;
+            background-size:cover
+        }
+        #B {
+            position: absolute;
+            left: 82%;
+            top:36%;
+            -webkit-border-radius:45px;
+            -moz-border-radius:45px;
+            -o-border-radius:45px;
+            border-radius:45px;
+            background: url(images/B.png) no-repeat;
+            background-size:cover
+        }
+    </style>
+</head>
+<body style="background-image: url(images/bg.jpg);  no-repeat">
+<div class="but circle" id="up"></div>
+<div class="but circle" id="down"></div>
+<div class="but circle" id="left"></div>
+<div class="but circle" id="right"></div>
+<div class="but mini" id="start"></div>
+<div class="but mini" id="select"></div>
+<div class="but circle" id="A"></div>
+<div class="but circle" id="B"></div>
+<script>
+    var url = "ws://" + document.URL.substr(7).split('/')[0];
+    var gamepad = new Gamepad(url,'gamepad1');
+    gamepad.connect();
+    gamepad.start_deviceorientation();
+    gamepad.enable_vibrate();
+
+    var sendKeyDownMessage= function(code) {
+        gamepad.sendMessage('keydown',{keyCode:code});
+    }
+    var sendKeyUpMessage = function(code) {
+        gamepad.sendMessage('keyup',{keyCode:code});
+    }
+    var dispatchCode = function(code,ispressed) {
+        if(ispressed){
+            switch (code)
+            {
+                case 'up':
+                    sendKeyDownMessage(5) ;
+                    break;
+                case 'down':
+                    sendKeyDownMessage(6) ;
+                    break;
+                case 'left':
+                    sendKeyDownMessage(7);
+                    break;
+                case 'right':
+                    sendKeyDownMessage(8);
+                    break;
+                case 'start':
+                    sendKeyDownMessage(4);
+                    break;
+                case 'select':
+                    sendKeyDownMessage(3);
+                    break;
+                case 'A':
+                    sendKeyDownMessage(1);
+                    break;
+                case 'B':
+                    sendKeyDownMessage(2);
+                    break;
+            }
+        } else {
+            switch (code)
+            {
+                case 'up':
+                    sendKeyUpMessage(5) ;
+                    break;
+                case 'down':
+                    sendKeyUpMessage(6) ;
+                    break;
+                case 'left':
+                    sendKeyUpMessage(7);
+                    break;
+                case 'right':
+                    sendKeyUpMessage(8);
+                    break;
+                case 'start':
+                    sendKeyUpMessage(4);
+                    break;
+                case 'select':
+                    sendKeyUpMessage(3);
+                    break;
+                case 'A':
+                    sendKeyUpMessage(1);
+                    break;
+                case 'B':
+                    sendKeyUpMessage(2);
+                    break;
+            }
+        }
+    }
+    var divs = document.getElementsByClassName('but');
+    for(var i=0;i<divs.length; i++) {
+        var but = divs[i] ;
+        but.addEventListener('touchstart',function(event){
+            dispatchCode(event.srcElement.id,true);
+        })  ;
+        but.addEventListener('touchmove',function(event){
+            event.preventDefault();
+            event.stopPropagation();
+        }) ;
+        but.addEventListener('touchend',function(event){
+            dispatchCode(event.srcElement.id,false);
+        })  ;
+
+    }
+    window.addEventListener('touchstart',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+    });
+    window.addEventListener('touchmove',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+    });
+    window.addEventListener('touchend',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+    });
+</script>
+</body>
+</html>

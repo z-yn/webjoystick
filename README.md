@@ -1,11 +1,11 @@
 
 ## webjoystick
-SDU_WebJoystick a open source project created by Four_Days base on Html5
+WebJoystick a open source project create by FourDays base on Html5
 websocket and Device API.  we aim to develop a new way to play game--- use
 your mobile as gamepad, so you can play your web games in your PC and use
 he special feature of your phone.
 ## Install
-it's a module of Node.js. firstly, you need to install node,see < http://nodejs.org/>
+it's a module of Node.js. first you need install node,see < http://nodejs.org/>
 with the help of Node Packaged Modules tool npm, you can easily install it by
 
 ```bash
@@ -61,17 +61,14 @@ var gamewatcher = new GameWatcher(url)
 ```
 ##### connect()
 connect to the websocket server
-
 ##### on(msg,func)
 handle the event named `msg` with the function `func`
-
 *Arguments*
 * `msg`: then event name
 * `func(data)`: the function to handle this event.
     data.uid---the uid of gamepad ;data.gamedata--- the data about the event
-    
-##### vibrate(uid,ruler)
-send vibrate message to the gamepad
+##### vabrate(uid,ruler)
+send vabrate message to the gamepad
 
 *Arguments*
 * `uid`: the uid of gamepad
@@ -80,8 +77,8 @@ send vibrate message to the gamepad
 ####  Events
 * connected--connected to server
 * stop---stop game signal, the reason given by data
-* gamepadAdded---new gamepad added to server, it's uid is given by data
-* gamepadRemoved----gamepad removed from server, it's uid is given by data
+* gamepadAdded---new gamepad added to server, uid given by data
+* gamepadRemoved----gamepad removed from server, it's uid given by data
 * start---gamepad send start game signal, it's uid given by data 
 * deviceorientation-----DeviceOrientation Event of html5 Device API
 * devicemotion-----DeviceMotion Event of html5 Device API
@@ -98,6 +95,7 @@ you need add public/javascripts/gamepad.js of the template
 * `uid`: the unique id of a gamepad
 
 *Example*
+
 ```javascript
 var url = "ws://" + document.URL.substr(7).split('/')[0];
 var gamepad = new Gamepad(url,'gamepad1')
@@ -107,7 +105,6 @@ connect to the websocket server
 
 ##### on(msg,func)
 handle the event named `msg` with the function `func`
-
 *Arguments*
 * `msg`: then event name
 * `func(data)`: the function to handle this event.
@@ -137,10 +134,8 @@ gamewatcher.on('hello',function(data) {
 ```
 ##### start_devicemotion() / stop_devicemotion()
 start/stop the devicemotion event listen
-
 ##### start_deviceorientation / stop_deviceorientation()
 start/stop the deviceorientation event listen
-
 ##### disable_vibrate() / enable_vibrate()
 disable/enable vibrate 
 
@@ -149,21 +144,20 @@ disable/enable vibrate
 
 
 ## License 
-
-    Copyright 2013 Four_Days
+    Copyright 2013 FourDays
     
-    SDU_WebJoystick is free software: you can redistribute it and/or modify
+    WebJoystick is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
     the Free Software Foundation, either version 3 of the License, or (at your
     option) any later version.
 
-    SDU_WebJoystick is distributed in the hope that it will be useful, but
+    WebJoystick is distributed in the hope that it will be useful, but
     WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
     or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
     License for more details.
 
     You should have received a copy of the GNU Lesser General Public License
-    along with SDU_WebJoystick.  If not, see <http://www.gnu.org/licenses/>. 
+    along with WebJoystick.  If not, see <http://www.gnu.org/licenses/>. 
 
     We referred to Node.js with honor, here is its license
     ====

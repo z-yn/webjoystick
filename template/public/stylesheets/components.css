@@ -1,0 +1,30 @@
+.slider-handle {
+    position: absolute;
+    background: red;
+}
+.slider {
+    position: absolute;
+    width: 60%;
+    height: 10%;
+    background: url("../images/scroll_bg.gif") center  repeat-x;
+    background-size:contain
+}
+.pad-button{
+    height: 22%;
+    width: 12%;
+    position: absolute;
+
+    background-size:cover
+}
+.stick-handle {
+    position: absolute;
+    border:1px solid #f60;
+    box-shadow: 0px 0px 100px 10px #b5d334, inset 0px 0px 100px 10px #b5d334;
+}
+.stick {
+    position: absolute;
+    border:1px solid #f60;
+    margin:0 auto;
+    border-radius:100%;
+    width:40%; height:60%;
+}

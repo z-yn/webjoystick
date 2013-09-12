@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Namespace: gamepad-components</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Namespace: gamepad-components</h1>
+    
+    
+
+
+
+<section>
+    
+<header>
+    <h2>
+    gamepad-components
+    </h2>
+    
+</header>  
+
+<article>
+    <div class="container-overview">
+    
+    
+    
+        
+            <div class="description">Gamepad-components are some pre-defined tag class.</div>
+        
+        
+        
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="UIManager.js.html">UIManager.js</a>, <a href="UIManager.js.html#line233">line 233</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+        
+        
+    
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Members</h3>
+        
+        <dl>
+            
+<dt>
+    <h4 class="name" id="button"><span class="type-signature"></span>button<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Buttons has two events, "buttonDown" and "buttonUp", and both of them is defined as:<br>
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="UIManager.js.html">UIManager.js</a>, <a href="UIManager.js.html#line239">line 239</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="slider"><span class="type-signature"></span>slider<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Sliders is a handle on a rail, the handle can be dragged on the rail, and on each drag event, it will send message to the station with type "sliderMove" or "sliderStart", messages are defined as:<br>{"id": slider.id, "position": x}<br>And when the drag is end, it will send message with type "sliderEnd" and without position<br>The position is normalized in the range(-1, 1).<br>.The id is the DOM element's id.<br>Sliders should have class name "slider" and tag name "div", and call UIManager.init() or UIManager.initSlider() then the handle and events will be added<br>The handle should have class name "slider-handle".
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="UIManager.js.html">UIManager.js</a>, <a href="UIManager.js.html#line237">line 237</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <h4 class="name" id="stick"><span class="type-signature"></span>stick<span class="type-signature"></span></h4>
+    
+    
+</dt>
+<dd>
+    
+    <div class="description">
+        Stick is a circular handle in a larger basing circle, the handle can be dragged to any position in the circle, and on each drag event, it will send message to the station with type "dragMove" or "dragStart", messages are defined as:<br>{"id": stick.id, "position":{"x": x, "y": y}}<br>The x, y in the position is normalized in the range(-1, 1).<br>The id is the DOM element's id.<br>And when the drag is end, it will send message with type "dragEnd" and without position.<br>Sticks' basing circle should have class name "stick" and tag name "div", and call UIManager.init() or UIManager.initSticks() then the handle and events will be added<br>The auto added handle would have class name "stick-handle".
+    </div>
+    
+    
+    
+
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="UIManager.js.html">UIManager.js</a>, <a href="UIManager.js.html#line235">line 235</a>
+    </li></ul></dd>
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        </dl>
+    
+    
+    
+    
+    
+    
+    
+</article>
+
+</section>  
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="Gamepad.html">Gamepad</a></li><li><a href="GameWatcher.html">GameWatcher</a></li><li><a href="UIManager.html">UIManager</a></li></ul><h3>Namespaces</h3><ul><li><a href="gamepad-components.html">gamepad-components</a></li><li><a href="gamewatcher-event.html">gamewatcher-event</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.0-dev</a> on Wed Sep 11 2013 23:31:14 GMT+0800 (CST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

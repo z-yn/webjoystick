@@ -18,7 +18,7 @@
         o = function() {
             for (var b = c.scripts || c.getElementsByTagName("script"), d = /(?:\?|&)(.*?)=(.*?)(?=&|$)/g, a, k = {}, h = 0, n = b.length; h < n; h++) {
                 var f = b[h].src;
-                if (f && f.indexOf("http://api.map.soso.com/v1.0/api.map.soso.com") > -1 && f.indexOf("main.js" /*tpa=http://api.map.soso.com/v1.0/main.js*/ ) > -1) for (;
+                if (f && f.indexOf("http://api.map.soso.com/v1.0/api.map.soso.com") > -1 && f.indexOf("main.js" /*tpa=http://api.map.soso.com/v1.0/ski.js*/ ) > -1) for (;
                 (a = d.exec(f)) != null;) k[a[1]] = decodeURIComponent(a[2])
             }
             return k
