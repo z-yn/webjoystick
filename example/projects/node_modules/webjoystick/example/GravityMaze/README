@@ -1,0 +1,6 @@
+start server 
+ $ node app.js
+then open
+ http://localhost:3000/game/ in your PC
+and open
+ http://<your ip>:3000/gamepad1.html

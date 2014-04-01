@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TestPopUps</title>
+    <script lang="text/javascript" src="popup.js"></script>
+    <style type="text/css">
+        @font-face {
+            font-family: 'werewolf';
+            src: url('fonts/werewolf.ttf');
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="stylesheets/mainpopup.css" />
+</head>
+<body>
+    <div id = "container">
+    </div>
+    <script lang="text/javascript">
+        var c = document.getElementById("container");
+        var f1 = function(){alert("1")};
+        var f2 = function(){alert("2")};
+        var pop = new PopUp("images/sky.jpg", [new PopUpOption("1", f1), new PopUpOption("2", f1)]);
+        var p = new PopUpManager(c);
+        p.popUp(pop);
+    </script>
+</body>
+</html>

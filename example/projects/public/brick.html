@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="js/three.min.js" lang="javascript"></script>
+    <script src="js/Detector.js" lang="javascript"></script>
+    <script src="js/Stats.js" lang="javascript"></script>
+    <script src="js/OrbitControls.js" lang="javascript"></script>
+    <script src="js/THREEx.KeyboardState.js" lang="javascript"></script>
+    <script src="js/THREEx.FullScreen.js" lang="javascript"></script>
+    <script src="js/THREEx.WindowResize.js" lang="javascript"></script>
+    <script src="geometry.js" lang="text/javascript"></script>
+    <script src="gameobject.js" lang="text/javascript"></script>
+    <script src="js/gamewatcher.js" lang="text/javascript"></script>
+    <script src="brick.js" lang="text/javascript"></script>
+    <script type="text/javascript" src="js/qrcode.js"></script>
+    <style>
+        #qrcode1{
+            position: absolute;
+            bottom: 120px;
+            right: 10px;
+            height: 150px;
+            width: 150px;
+            zIndex: 100;
+        }
+        #qrcode1 canvas{
+            position: absolute;
+            bottom: 120px;
+            right: 10px;
+            height: 150px;
+            width: 150px;
+            zIndex: 100;
+        }
+        #qrcode2{
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            height: 150px;
+            width: 150px;
+            zIndex: 100;
+        }
+        #qrcode2 canvas{
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            height: 150px;
+            width: 150px;
+            zIndex: 100;
+        }
+    </style>
+    <!--script src="welcome.js" lang="text/javascript"></script-->
+    <title>Have a lot of fun</title>
+</head>
+<body>
+<div id="Game">
+</div>
+<div id="qrcode1"></div>
+<div id="qrcode2"></div>
+<script>
+    preset();
+    init();
+    animate();
+</script>
+</body>
+</html>

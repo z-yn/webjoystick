@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="js/gamewatcher.js" lang="text/javascript"></script>
+</head>
+<body>
+<script>
+    var url = "ws://" + document.URL.substr(7).split('/')[0];
+    var gamewatcher = new GameWatcher(url);
+    gamewatcher.connect();
+    gamewatcher.on('dragMove',function(data){
+        alert(data.gamedata.x);
+    })  ;
+</script>
+</body>
+</html>

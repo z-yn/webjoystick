@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="js/three.min.js" lang="javascript"></script>
+    <script src="js/Detector.js" lang="javascript"></script>
+    <script src="js/Stats.js" lang="javascript"></script>
+    <script src="js/OrbitControls.js" lang="javascript"></script>
+    <script src="js/loaders/OBJLoader.js"></script>
+    <script src="js/loaders/MTLLoader.js"></script>
+    <script src="js/loaders/OBJMTLLoader.js"></script>
+    <script src="js/THREEx.KeyboardState.js" lang="javascript"></script>
+    <script src="js/THREEx.FullScreen.js" lang="javascript"></script>
+    <script src="js/THREEx.WindowResize.js" lang="javascript"></script>
+    <script src="geometry.js" lang="text/javascript"></script>
+    <script src="gameobject.js" lang="text/javascript"></script>
+    <script src="js/gamewatcher.js" lang="text/javascript"></script>
+    <script src="popup.js" lang="text/javascript"></script>
+    <script src="ski.js" lang="text/javascript"></script>
+    <script type="text/javascript" src="js/qrcode.js"></script>
+
+    <!--script src="welcome.js" lang="text/javascript"></script-->
+    <title>Have a lot of fun</title>
+    <style type="text/css">
+        @font-face {
+            font-family: 'werewolf';
+            src: url('fonts/werewolf.ttf');
+        }
+        #counter{
+            position: absolute;
+            top: 10px;
+            height: 50px;
+            width: 125px;
+            zIndex: 100;
+            text-align: center;
+            font-family: werewolf;
+            font-size: 36px;
+            color: #ffffff;
+            line-height: 50px;
+            background: url("images/button.png");
+            background-size: 125px 50px;
+        }
+        #pause{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            height: 50px;
+            width: 125px;
+            zIndex: 100;
+            text-align: center;
+            font-family: werewolf;
+            font-size: 36px;
+            color: #ffffff;
+            line-height: 50px;
+            background: url("images/button.png");
+            background-size: 125px 50px;
+        }
+        #qrcode{
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            height: 150px;
+            width: 150px;
+            zIndex: 100;
+        }
+        #qrcode canvas{
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            height: 150px;
+            width: 150px;
+            zIndex: 100;
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="stylesheets/mainpopup.css" />
+</head>
+<body >
+    <audio src="audios/ding-dang.mp3" id="bgmusic" loop="true"></audio>
+    <div id="Game">
+        <div id="counter"></div>
+        <div id="pause" onclick="pause()">pause</div>
+        <div id="qrcode"></div>
+    </div>
+    <script>
+        main();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Gamepad Template</title>
+    <script src="js/gamepad.js"></script>
+    <script>
+       var url = "ws://" + document.URL.substr(7).split('/')[0];
+	   var starttime , endtime;
+        var gamepad = new Gamepad(url,'test');
+        gamepad.connect();
+        gamepad.start_deviceorientation();
+        gamepad.enable_vibrate();
+        gamepad.enable_shake();
+        document.addEventListener('touchstart',function(event){
+			starttime = new Date().getTime(); 
+            gamepad.sendMessage('change',0);
+            event.preventDefault();
+            event.stopPropagation();
+        });
+		window.addEventListener('touchend',function(event){
+			endtime = new Date().getTime();
+			if((endtime-starttime)>300) {
+				 gamepad.sendMessage('pause',0);
+			}
+            event.preventDefault();
+            event.stopPropagation();
+        });
+    </script>
+</head>
+
+<body style="background-image: url(images/bg.jpg);  no-repeat  ">
+
+</body>
+</html>

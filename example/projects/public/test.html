@@ -1,0 +1,54 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+
+    <title>Experiment that lets you drag frames around</title>
+    <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <style>
+
+        .stick-handle {
+            position: absolute;
+            border:1px solid #f60;
+            box-shadow: 0px 0px 100px 10px #b5d334, inset 0px 0px 100px 10px #b5d334;
+        }
+        .stick {
+            position: absolute;
+            border:1px solid #b5d334;
+            margin:0 auto;
+            border-radius:100%;
+            width:40%; height:60%;
+        }
+        #circle1 {
+            position: absolute;
+            left: 0%;
+            top: 35%;
+            border:1px solid #f60; margin:0 auto;
+
+        }
+        #circle2 {
+            position: absolute;
+            right: 0%;
+            top: 35%;
+            border:1px solid #f60; margin:0 auto;
+
+        }
+
+    </style>
+    <script type="text/javascript" src="js/gamepad.js"></script>
+    <script type="text/javascript" src="js/UIManager.js"></script>
+</head>
+
+<body style="background-image: url(images/bg.jpg);  no-repeat  ">
+
+<div class="stick" id="circle1"></div>
+<div class="stick" id="circle2"></div>
+<script>
+
+  var url = "ws://" + document.URL.substr(7).split('/')[0];
+  var gamepad = new Gamepad(url,'test');
+  gamepad.connect();
+  gamepad.enable_vibrate();
+  new UIManager(gamepad).init();
+
+</script>
+
+</body></html>

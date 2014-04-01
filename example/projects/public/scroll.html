@@ -1,0 +1,71 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=GBK">
+    <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1,user-scalable=no"/>
+    <title>Experiment that lets you drag frames around</title>
+
+    <style>
+        .slider-handle {
+            position: absolute;
+            background: red;
+        }
+        .slider {
+            position: absolute;
+            width: 60%;
+            height: 10%;
+            background: url("images/scroll_bg.gif") center  repeat-x;
+            background-size:contain
+        }
+
+        #scroll1{
+            left: 0%;
+            top: 45%;
+        }
+
+        .pad-button{
+            height: 22%;
+            width: 12%;
+            position: absolute;
+            background-size:cover
+        }
+        #shoot{
+            background: #ff6600;
+            right: 0;
+            bottom: 0;
+        }
+    </style>
+    <script type="text/javascript" src="js/gamepad.js"></script>
+    <script type="text/javascript" src="js/UIManager.js"></script>
+</head>
+
+<body style="background-image: url(images/bg.jpg);  no-repeat">
+
+<div class="slider" id="scroll1"></div>
+<div class="pad-button" id="shoot"></div>
+
+<script>
+
+    var url = "ws://" + document.URL.substr(7).split('/')[0];
+    var uid = window.location.search.substring(5);
+
+    var gamepad = new Gamepad(url,uid);
+    gamepad.connect();
+    window.gamepad = gamepad;
+    new UIManager(gamepad).init();
+    /*var shoot = document.getElementById('shoot');
+    shoot.addEventListener('touchstart',function(event){
+        gamepad.sendMessage('brickStart',0);
+        event.preventDefault();
+        event.stopPropagation();
+    })  ;
+    shoot.addEventListener('touchmove',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+    })  ;
+    shoot.addEventListener('touchend',function(event){
+
+        event.preventDefault();
+        event.stopPropagation();
+    })  ;     */
+</script>
+
+</body></html>

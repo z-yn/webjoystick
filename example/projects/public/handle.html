@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+    <script src="js/gamepad.js"></script>
+    <script src="js/UIManager.js"></script>
+    <style>
+        #up {
+            left:16%;
+            top:20%;
+            background: url(images/up.png) no-repeat;
+        }
+        #down {
+            left:16%;
+            top:56%;
+            background: url(images/down.png) no-repeat;
+        }
+        #left {
+            left:4%;
+            top:38%;
+            background: url(images/left.png) no-repeat;
+        }
+        #right {
+            left:28%;
+            top:38%;
+            background: url(images/right.png) no-repeat;
+        }
+        #start {
+            left:42%;
+            top:62%;
+            background: url(images/start.png) no-repeat;
+        }
+        #select {
+            left: 55%;
+            top:62%;
+            background: url(images/select.png) no-repeat;
+        }
+        #A {
+            left:64%;
+            top:36%;
+            background: url(images/A.png) no-repeat;
+        }
+        #B {
+            left: 82%;
+            top:36%;
+            background: url(images/B.png) no-repeat;
+        }
+        .pad-button{
+            height: 22%;
+            width: 12%;
+            position: absolute;
+
+            background-size:cover
+        }
+    </style>
+</head>
+<body style="background-image: url(images/bg.jpg);  no-repeat">
+<div class="pad-button" id="up"></div>
+<div class="pad-button" id="down"></div>
+<div class="pad-button" id="left"></div>
+<div class="pad-button" id="right"></div>
+<div class="pad-button" id="start"></div>
+<div class="pad-button" id="select"></div>
+<div class="pad-button" id="A"></div>
+<div class="pad-button" id="B"></div>
+<script>
+    var url = "ws://" + document.URL.substr(7).split('/')[0];
+    var pad_uid = document.URL.split('=')[1];
+    var gamepad = new Gamepad(url,pad_uid);
+    gamepad.connect();
+	
+    new UIManager(gamepad).init();
+    window.addEventListener('touchstart',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+    });
+    window.addEventListener('touchmove',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+    });
+    window.addEventListener('touchend',function(event){
+        event.preventDefault();
+        event.stopPropagation();
+    });
+
+</script>
+</body>
+</html>

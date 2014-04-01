@@ -1,0 +1,37 @@
+.popup_container{
+    font-family: "werewolf";
+    width: 256px;
+    position:absolute;
+    top:100px;
+    left: 500px;
+    font-size: 32px;
+    color: #ffffff;
+    background: url("../images/wood-board.png");
+    background-size: 336px 460px;
+    padding: 40px;
+}
+.popup_img{
+    border-radius: 20px;
+}
+.popup_sign{
+    display: block;
+    height: 40px;
+    width: 40px;
+    //border-radius: 20px;
+    float: left;
+}
+.popup_row{
+    height: 40px;
+    background: url("../images/button.png");
+    background-size:256px 40px;
+    //display: block;
+    margin-top: 20px;
+}
+.active .popup_sign{
+    background: url("../images/snow_flake.png");
+    background-size: 40px, 40px;
+}
+.popup_text{
+    float: none;
+    text-indent: 20px;
+}
